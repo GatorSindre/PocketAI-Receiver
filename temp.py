@@ -13,14 +13,13 @@ print(f"Connected to {HOST}:{PORT}")
 
 try:
     while True:
-        message = "signal sent"
+        message = input("Input: ")
         # Convert string to bytes
         data = message.encode("utf-8")
 
         # Send binary data
         sock.sendall(data)
         print(f"Sent: {message}")
-
         # Wait 5 seconds
         time.sleep(5)
 finally:

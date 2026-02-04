@@ -4,6 +4,8 @@ import time
 import pyperclip
 import socket
 
+response = ""
+
 presets = (
     "hello", 
     "preset2"
@@ -56,14 +58,18 @@ def wait_for_answer():
         if (currentMessage != lastMessage):
             time.sleep(check_delay)
         else:
+            global response
             response = conversation_to_string(currentMessage)
             print(response)
 
             time.sleep(0.3)
-            return response
+            return 0
 
 def chatgpt_create_convo(preset=0):
     global convo_exists
+    if convo_exists == True:
+        print("Stopped duplicate convo")
+        return
     convo_exists = True
 
     subprocess.run([
@@ -138,33 +144,37 @@ conn, addr = sock.accept()
 print("Connected by", addr)
 
 while True:
-    data = conn.recv(4096)
-    if not data:
-        break
+    while True:
+        data = conn.recv(4096)
+        if not data:
+            break
 
-    print("Raw bytes:", data)
+        print("Raw bytes:", data)
 
-    text
+        text = ""
 
-    try:
-        global text
-        text = data.decode("utf-8")
-        print("As string:", text)
-    except UnicodeDecodeError:
-        print("Could not decode bytes to string")
+        try:
+            text = data.decode("utf-8")
+            print("As string:", text)
+        except UnicodeDecodeError:
+            print("Could not decode bytes to string")
 
-    if text:
-        send_variable = f"I received: {text}"
+        if text:
+            send_variable = f"I received: {text}"
 
-        ## TODO Create code here to receive data and send it back
+            ## TODO Create code here to receive data and send it back
+
+            if text == "_delete_convo":
+                chatgpt_delete_convo()
+            elif text == "_create_convo":
+                chatgpt_create_convo()
+            else:
+                chatgpt_new_message(text)
+            conn.sendall(send_variable.encode("utf-8"))  # encode to bytes
+        
+        else:
+            conn.sendall(response)
 
 
-        conn.sendall(send_variable.encode("utf-8"))  # encode to bytes
-    
-    else:       # TODO Delete this send-back later when everything is confirmed to work, so nobody tries to ddos and just thinks the port is closed
-        # Send back raw bytes if it couldn't decode
-        conn.sendall(data)
-
-
-conn.close()
-sock.close()
+    conn.close()
+    sock.close()
