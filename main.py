@@ -6,13 +6,12 @@ import socket
 
 response = ""
 
-presets = (
-    "hello", 
-    "preset2"
-    )
+default_preset = "ooooonly use uft-8 characters in this conversation and respond with simple sentences that can be read by a screen reader since i can only hear you not read. And also please ignore the extra o's at the start of my messages"
 
 def chatgpt_new_message(input):
-    pyautogui.write(input, 0.05)
+    pyautogui.leftClick(-400, 1000)
+    time.sleep(0.5)
+    pyautogui.write("oooooo " + input, 0.05)
     time.sleep(0.05)
     pyautogui.press("enter")
     time.sleep(0.1)
@@ -85,9 +84,11 @@ def chatgpt_create_convo(preset=0):
 
     time.sleep(1.5)
 
-
-    pyautogui.write(presets[preset-1], 0.05)
-    time.sleep(0.05)
+    pyautogui.leftClick(-400, 1000)
+    
+    pyautogui.press("space")
+    pyautogui.write(default_preset, 0.05)
+    time.sleep(0.1)
     pyautogui.press("enter")
     
     time.sleep(1)
@@ -97,9 +98,13 @@ def chatgpt_create_convo(preset=0):
 def chatgpt_delete_convo():
     global convo_exists
     if not convo_exists:
+        global response
         print("Prevented overusage of chatgpt_delete_convo")
+        response = "blocked deletion"
         return
     convo_exists = False
+
+    response = "deleted message"
 
     pyautogui.leftClick(-30, 16)
     time.sleep(0.3)
@@ -111,24 +116,11 @@ def conversation_to_string(full_text):
     parts = full_text.split("ChatGPT sa:")
     
     if len(parts) < 2:
-        return ""  # No ChatGPT message found
+        return ""
 
     latest_message = parts[-1].strip()
 
     return latest_message
-
-
-"""   -- Functions
-chatgpt_new_message
-chatgpt_delete_convo
-chatgpt_create_convo
-
-"""
-
-
-
-
-
 
 
 
@@ -162,19 +154,23 @@ while True:
         if text:
             send_variable = f"I received: {text}"
 
-            ## TODO Create code here to receive data and send it back
-
             if text == "_delete_convo":
                 chatgpt_delete_convo()
             elif text == "_create_convo":
-                chatgpt_create_convo()
+                chatgpt_create_convo(0)
+            elif text == "_repeat":
+                print("repeat")
+                response = "repeating: this is not a finished command"
             else:
                 chatgpt_new_message(text)
-            conn.sendall(send_variable.encode("utf-8"))  # encode to bytes
+            conn.sendall(response.encode("utf-8"))
         
         else:
             conn.sendall(response)
 
 
-    conn.close()
-    sock.close()
+"""
+conn.close()
+sock.close()
+
+"""
