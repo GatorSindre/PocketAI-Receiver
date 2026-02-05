@@ -11,7 +11,9 @@ default_preset = "ooooonly use uft-8 characters in this conversation and respond
 def chatgpt_new_message(input):
     pyautogui.leftClick(-400, 1000)
     time.sleep(0.5)
-    pyautogui.write("oooooo " + input, 0.05)
+    pyautogui.write("oooooo ", 0.05)
+    time.sleep(0.05)
+    pyautogui.write(input)
     time.sleep(0.05)
     pyautogui.press("enter")
     time.sleep(0.1)
@@ -87,8 +89,10 @@ def chatgpt_create_convo(preset=0):
     pyautogui.leftClick(-400, 1000)
     
     pyautogui.press("space")
-    pyautogui.write(default_preset, 0.05)
-    time.sleep(0.1)
+    pyautogui.write("ooooo ", 0.05)
+    time.sleep(0.05)
+    pyautogui.write(default_preset)
+    time.sleep(0.2)
     pyautogui.press("enter")
     
     time.sleep(1)
@@ -154,11 +158,13 @@ while True:
         if text:
             send_variable = f"I received: {text}"
 
-            if text == "_delete_convo":
+            text = text.lower()
+
+            if text == "del":
                 chatgpt_delete_convo()
-            elif text == "_create_convo":
+            elif text == "new":
                 chatgpt_create_convo(0)
-            elif text == "_repeat":
+            elif text == "rep":
                 print("repeat")
                 response = "repeating: this is not a finished command"
             else:
