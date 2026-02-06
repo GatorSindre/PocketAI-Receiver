@@ -73,12 +73,16 @@ def chatgpt_create_convo(preset=0):
         return
     convo_exists = True
 
-    subprocess.run([
+    subprocess.Popen([
         r"C:\Program Files\Google\Chrome\Application\chrome.exe", 
         "--incognito"
     ])
 
     time.sleep(1)
+
+    pyautogui.leftClick(-790, 79)
+
+    time.sleep(0.2)
 
     pyautogui.write("chatgpt.com", 0.05)
     time.sleep(0.05)
